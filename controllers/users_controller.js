@@ -25,7 +25,7 @@ module.exports.create = function (req, res) {
         return res.redirect('back');
     }
 
-    User.findOne({ email: req.body.email }, function (err,user) {
+    User.findOne({ email: req.body.email }, function (err, user) {
         if (err) {
             console.log('error in signing up');
             return;
@@ -50,5 +50,32 @@ module.exports.create = function (req, res) {
 
 //sign in and create a session for the user
 module.exports.createSession = function (req, res) {
-    //ToDo
+
+    //steps to authenticate
+    //find the user
+    User.findOne({ email: req.body.email }, function (err, user) {
+        if (err) {
+            console.log('error in finding user in signing in');
+            return;
+        }
+        //Handle user found
+        if (user) {
+
+            //Handle passwords which don't match
+            if(user.password!=req.body.password){
+                return res.redirect('back');
+            }
+
+            //Handle session creation
+            res.cookie('user_id',user.id);
+            return res.redirect('/users/profile');
+
+        }
+        else {
+            //Handle user not found
+            return res.redirect('back');
+        }
+    })
+
+
 }
